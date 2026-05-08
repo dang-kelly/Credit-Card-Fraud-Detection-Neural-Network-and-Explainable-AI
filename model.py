@@ -48,8 +48,11 @@ print("Missing values in Xtest:", np.sum(np.isnan(Xtest)))
 
 ## Handle class imbalance by undersampling
 # Visualize class imabalance for whole dataset
+plt.figure(figsize=(6, 4))
 sns.countplot(x='Class', data=df)
 plt.title('Class Distribution Before Undersampling')
+plt.tight_layout()
+plt.savefig('Class_Distribution_Before_Undersampling.png', dpi=300, bbox_inches="tight")
 plt.show()
     # Data is highly unabalnced, majority of data classified as 0
     # We will only undersample on the training data and test on the original, observed imabalance for honest results
@@ -59,8 +62,11 @@ undersampler = RandomUnderSampler(sampling_strategy=0.52, random_state=42)
 Xtrain, Ytrain = undersampler.fit_resample(Xtrain, Ytrain)
 
 # Visualize class imabalance for training dataset after undersampling
+plt.figure(figsize=(6, 4))
 sns.countplot(x=Ytrain, data=pd.DataFrame(Ytrain, columns=['Class']))
 plt.title('Class Distribution of Training Data After Undersampling')
+plt.tight_layout()
+plt.savefig('Training_Class_Distribution_After_Undersampling.png', dpi=300, bbox_inches="tight")
 plt.show()
 
 
