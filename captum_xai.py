@@ -12,17 +12,21 @@ from captum.attr import (
 
 from model import df, Xtrain, Ytrain, FFNN, create_model, predict
 
-
+# Visualization function
 def visualize_attribution(attribution, method):
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(12, 5))
     features = df.drop('Class', axis=1).columns
     plt.bar(features, attribution.cpu().numpy()[0])
     plt.xlabel('Feature Index')
     plt.ylabel('Attribution Value')
     plt.title(f'{method} Feature Attribution')
+    plt.tight_layout()
+    plt.savefig(f'{method}_{save_path}.png', dpi=300, bbox_inches='tight')
     plt.show()
+    plt.close()
 
 
+# Captum function: attribution methods and corresponding attribution plots
 def run_captum(model, train_ds_obs, method, device=None):
     try:
         device = next(model.parameters()).device
