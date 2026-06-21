@@ -49,10 +49,15 @@ print("Missing values in Xtest:", np.sum(np.isnan(Xtest)))
 ## Handle class imbalance by undersampling
 # Visualize class imabalance for whole dataset
 plt.figure(figsize=(6, 4))
-sns.countplot(x='Class', data=df)
+graph1 = sns.countplot(x='Class', data=df, hue='Class', palette={0: 'blue', 1: 'skyblue'})
+
+handles, labels = graph1.get_legend_handles_labels()
+new_labels = ['0: Legitimate', '1: Fraud']    # rename legend labels to be more descriptive
+graph1.legend(handles, new_labels)
+
 plt.title('Class Distribution Before Undersampling')
 plt.tight_layout()
-plt.savefig('Class_Distribution_Before_Undersampling.png', dpi=300, bbox_inches="tight")
+plt.savefig('Class Distribution Before Undersampling.png', dpi=300, bbox_inches="tight")
 plt.show()
     # Data is highly unabalnced, majority of data classified as 0
     # We will only undersample on the training data and test on the original, observed imabalance for honest results
@@ -63,10 +68,15 @@ Xtrain, Ytrain = undersampler.fit_resample(Xtrain, Ytrain)
 
 # Visualize class imabalance for training dataset after undersampling
 plt.figure(figsize=(6, 4))
-sns.countplot(x=Ytrain, data=pd.DataFrame(Ytrain, columns=['Class']))
+graph2 = sns.countplot(x=Ytrain, data=pd.DataFrame(Ytrain, columns=['Class']), hue='Class', palette={0: 'blue', 1: 'skyblue'})
+
+handles, labels = graph2.get_legend_handles_labels() 
+new_labels = ['0: Legitimate', '1: Fraud']   
+graph2.legend(handles, new_labels)
+
 plt.title('Class Distribution of Training Data After Undersampling')
 plt.tight_layout()
-plt.savefig('Training_Class_Distribution_After_Undersampling.png', dpi=300, bbox_inches="tight")
+plt.savefig('Training Class Distribution After Undersampling.png', dpi=300, bbox_inches="tight")
 plt.show()
 
 
