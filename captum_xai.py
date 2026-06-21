@@ -10,16 +10,16 @@ from captum.attr import (
     IntegratedGradients
 )
 
-from model import df, Xtrain, Ytrain, FFNN, create_model, predict
+from model import df, Xtest, Ytest, FFNN, create_model, predict
 
 # Visualization function
-def visualize_attribution(attribution, method):
+def visualize_attribution(attribution, method, save_path="attribution"):
     plt.figure(figsize=(12, 5))
     features = df.drop('Class', axis=1).columns
     plt.bar(features, attribution.cpu().numpy()[0])
     plt.xlabel('Feature Index')
     plt.ylabel('Attribution Value')
-    plt.title(f'{method} Feature Attribution')
+    plt.title(f'{method} Feature Attribution on First Test Sample')
     plt.tight_layout()
     plt.savefig(f'{method}_{save_path}.png', dpi=300, bbox_inches='tight')
     plt.show()
@@ -27,14 +27,14 @@ def visualize_attribution(attribution, method):
 
 
 # Captum function: attribution methods and corresponding attribution plots
-def run_captum(model, train_ds_obs, method, device=None):
+def run_captum(model, test_ds_obs, method, device=None):
     try:
         device = next(model.parameters()).device
     except StopIteration:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     model.eval()
-    x, y = train_ds_obs
+    x, y = test_ds_obs
     x = x.unsqueeze(0).float()  # add batch size of 1 for a single sample: (1, 30)
     x, y = x.to(device), y.to(device) 
 
@@ -49,7 +49,7 @@ def run_captum(model, train_ds_obs, method, device=None):
         'IntegratedGradients': 'Integrated Gradients Explanation'
     }
 
-    baseline = torch.tensor(Xtrain[Ytrain == 0].mean(axis=0)).float().unsqueeze(0).to(device)
+    baseline = torch.tensor(Xtest[Ytest == 0].mean(axis=0)).float().unsqueeze(0).to(device)
 
     if method == 'Lime':
         explainer = Lime(model)
@@ -69,13 +69,13 @@ def main():
     model = create_model(input_n=30, hidden_n=16, output_n=1, dr=0.5)
     model.load_state_dict(torch.load('FFNN_CCFD.pth'))
 
-    train_ds_obs = (torch.tensor(Xtrain[0]).float(), torch.tensor(Ytrain[0]).float())
+    test_ds_obs = (torch.tensor(Xtest[0]).float(), torch.tensor(Ytest[0]).float())
 
     methods = ['Lime', 'GradientShap', 'IntegratedGradients']
 
     for method in methods:
         print(f'\nRunning {method}:')
-        run_captum(model, train_ds_obs, method=method)
+        run_captum(model, test_ds_obs, method=method)
 
 if __name__ == '__main__':
     main()
