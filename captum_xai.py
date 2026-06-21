@@ -17,11 +17,12 @@ def visualize_attribution(attribution, method, save_path="attribution"):
     plt.figure(figsize=(12, 5))
     features = df.drop('Class', axis=1).columns
     plt.bar(features, attribution.cpu().numpy()[0])
+    plt.xticks(rotation=90)
     plt.xlabel('Feature Index')
     plt.ylabel('Attribution Value')
     plt.title(f'{method} Feature Attribution on First Test Sample')
     plt.tight_layout()
-    plt.savefig(f'{method}_{save_path}.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'{method} {save_path}.png', dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
 
@@ -44,9 +45,9 @@ def run_captum(model, test_ds_obs, method, device=None):
     print(f'Class Prediction: {pred}')  
 
     titles = {
-        'Lime': 'LIME Explanation',
-        'GradientShap': 'Gradient SHAP Explanation',
-        'IntegratedGradients': 'Integrated Gradients Explanation'
+        'Lime': 'LIME',
+        'GradientShap': 'Gradient SHAP',
+        'IntegratedGradients': 'Integrated Gradients'
     }
 
     baseline = torch.tensor(Xtest[Ytest == 0].mean(axis=0)).float().unsqueeze(0).to(device)
